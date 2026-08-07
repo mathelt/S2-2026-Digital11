@@ -11,6 +11,7 @@ const USE_OFFLINE_MOCK = false;
 let aquariumData = null;
 let lastUpdated = "";
 
+
 function preload() {
   // Load initial data before setup() runs
   let endpoint = USE_OFFLINE_MOCK ? "sample-data.json" : PROXY_URL;
@@ -18,7 +19,7 @@ function preload() {
 }
 
 function setup() {
-  createCanvas(800, 500);
+  createCanvas(1160, 700);
   
   // Refresh live data every 5 minutes (300,000 ms)
   if (!USE_OFFLINE_MOCK) {
@@ -45,25 +46,39 @@ function draw() {
   fill(255);
   textSize(24);
   textAlign(LEFT, TOP);
-  text("Fish Environment Dashboard", 30, 30);
+  text("Fish Environment Dashboard", 450, 30);
 
   // Display connection status
   textSize(12);
   fill(150, 200, 255);
-  text("Last updated: " + (lastUpdated || "Loading..."), 30, 65);
+  text("Last updated: " + (lastUpdated || "Loading..."), 450, 65);
 
   // 2. Render Dashboard Graphics
   if (aquariumData) {
     // NOTE: Update these keys based on your actual Seneye JSON response structure!
     // Example fields commonly found in sensor data:
     let temp = aquariumData[0].exps.temperature.curr || 24.5;
-    let ph = aquariumData[0].ph.curr || 7.2;
-    let nh3 = aquariumData[0].nh3.curr || 0.01;
+    let ph = aquariumData[0].exps.ph.curr || 7.2;
+    let nh3 = aquariumData[0].exps.nh3.curr || 0.01;
+    let o2 = aquariumData[0].exps.o2.curr || 0;
 
     // Call your custom graphic widgets
     drawTempWidget(50, 120, temp);
-    drawGaugeWidget(300, 120, "pH Level", ph, 6.0, 8.5);
-    drawGaugeWidget(550, 120, "Ammonia (NH3)", nh3, 0.0, 0.05);
+    drawGaugeWidget(325, 120, "pH Level", ph, 6.0, 8.5);
+    drawGaugeWidget(600, 120, "Ammonia (NH3)", nh3, 0.0, 0.05);
+    drawGaugeWidget(875, 120, "Oxygen Level", o2, 0.0, 100.0);
+    
+    //Testing drawing a background for the data logs
+    drawBackgroundSquare(50, 300, "Data Logs", 750, 350);
+    drawBackgroundSquare(850, 300, "Light", 250, 350);
+
+    if (ph > 8)
+    {
+      fill(255, 0, 0);
+      textSize(24);
+      textAlign(RIGHT, BOTTOM);
+      text("The Ph is too high!", 525, 120);
+    }
 
   } else {
     // Loading State
@@ -74,11 +89,12 @@ function draw() {
 }
 
 // Example Widget Function: Temperature Card
-function drawTempWidget(x, y, tempVal) {
+function drawTempWidget(x, y, tempVal) 
+{
   // Background Card
   fill(35, 48, 68);
   stroke(60, 80, 110);
-  rect(x, y, 200, 150, 10);
+  rect(x, y, 200, 150, 15);
 
   // Label
   noStroke();
@@ -93,7 +109,8 @@ function drawTempWidget(x, y, tempVal) {
 }
 
 // Example Widget Function: Simple Bar Gauge
-function drawGaugeWidget(x, y, label, val, minVal, maxVal) {
+function drawGaugeWidget(x, y, label, val, minVal, maxVal) 
+{
   fill(35, 48, 68);
   stroke(60, 80, 110);
   rect(x, y, 200, 150, 10);
@@ -103,7 +120,20 @@ function drawGaugeWidget(x, y, label, val, minVal, maxVal) {
   textSize(14);
   text(label, x + 15, y + 15);
 
+  
   fill(255);
   textSize(28);
   text(val, x + 15, y + 50);
+}
+
+function drawBackgroundSquare(x, y, label, w, h)
+{
+  fill(35, 48, 68);
+  stroke(60, 80, 110);
+  rect(x, y, w, h, 10);
+
+  noStroke();
+  fill(180, 200, 220);
+  textSize(14);
+  text(label, x + 15, y + 15);
 }
