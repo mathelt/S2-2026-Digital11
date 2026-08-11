@@ -40,27 +40,30 @@ function onError(err) {
 }
 
 function draw() {
-  background(20, 30, 45); // Dark blue aquarium background
+  background(98, 143, 256, 90); // Dark blue aquarium background
 
   // 1. Draw Title Header
   fill(255);
-  textSize(24);
+  textSize(40);
   textAlign(LEFT, TOP);
-  text("Fish Environment Dashboard", 450, 30);
+  text("Fish Environment Dashboard", 315, 30);
 
   // Display connection status
   textSize(12);
-  fill(150, 200, 255);
-  text("Last updated: " + (lastUpdated || "Loading..."), 450, 65);
+  fill(0, 0, 0);
+  text("Last updated: " + (lastUpdated || "Loading..."), 500, 70);
 
   // 2. Render Dashboard Graphics
   if (aquariumData) {
     // NOTE: Update these keys based on your actual Seneye JSON response structure!
     // Example fields commonly found in sensor data:
-    let temp = aquariumData[0].exps.temperature.curr || 24.5;
+    let temp = Math.round(aquariumData[0].exps.temperature.curr * 100)/100 || 24.5;
     let ph = aquariumData[0].exps.ph.curr || 7.2;
     let nh3 = aquariumData[0].exps.nh3.curr || 0.01;
     let o2 = aquariumData[0].exps.o2.curr || 0;
+    let light = aquariumData[0].exps.lux.curr || 0;
+
+     
 
     // Call your custom graphic widgets
     drawTempWidget(50, 120, temp);
@@ -70,7 +73,8 @@ function draw() {
     
     //Testing drawing a background for the data logs
     drawBackgroundSquare(50, 300, "Data Logs", 750, 350);
-    drawBackgroundSquare(850, 300, "Light", 250, 350);
+    //drawBackgroundSquare(850, 300, "Light", 250, 350);
+    drawLightWidget(850, 300, "Light", light , 250, 350, 0, 1000)
 
     if (ph > 8)
     {
@@ -136,4 +140,21 @@ function drawBackgroundSquare(x, y, label, w, h)
   fill(180, 200, 220);
   textSize(14);
   text(label, x + 15, y + 15);
+}
+
+function drawLightWidget(x, y, label, val, w, h, minVal, maxVal) 
+{
+  fill(35, 48, 68);
+  stroke(60, 80, 110);
+  rect(x, y, w, h, 10);
+
+  noStroke();
+  fill(180, 200, 220);
+  textSize(14);
+  text(label, x + 15, y + 15);
+
+  
+  fill(255);
+  textSize(28);
+  text(val, x + 15, y + 50);
 }
