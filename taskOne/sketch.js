@@ -2,6 +2,9 @@
 // STUDENT TASK: Build a graphical dashboard for Seneye
 // ===================================================
 
+
+
+
 // Replace this with your teacher's Cloudflare Worker URL:
 const PROXY_URL = "https://seneye-proxy.ezankov.workers.dev/";
 
@@ -10,7 +13,7 @@ const USE_OFFLINE_MOCK = false;
 
 let aquariumData = null;
 let lastUpdated = "";
-
+let ph = null;
 
 function preload() {
   // Load initial data before setup() runs
@@ -76,12 +79,29 @@ function draw() {
     //drawBackgroundSquare(850, 300, "Light", 250, 350);
     drawLightWidget(850, 300, "Light", light , 250, 350, 0, 1000)
 
-    if (ph > 8)
+    if (ph > 0)
     {
       fill(255, 0, 0);
       textSize(24);
       textAlign(RIGHT, BOTTOM);
       text("The Ph is too high!", 525, 120);
+      // draw();
+      
+      //Framecount % (Frames per change) < (number of frames which it is on)
+      if (frameCount % 60 < 30) {
+        // Red fill with white outline
+        fill(150, 0, 0);
+        stroke(255);
+        strokeWeight(2);
+        rect(430, 170, 50, 50, 15);
+
+        // Warning text inside the flashing box
+        fill(255);
+        noStroke();
+        textSize(24);
+        textAlign(CENTER, CENTER);
+        text("!", 455, 195);
+      }
     }
 
   } else {
@@ -103,13 +123,13 @@ function drawTempWidget(x, y, tempVal)
   // Label
   noStroke();
   fill(180, 200, 220);
-  textSize(14);
+  textSize(30);
   text("Water Temp", x + 15, y + 15);
 
   // Value Display
   fill(100, 220, 255);
   textSize(36);
-  text(tempVal + "°C", x + 15, y + 50);
+  text(tempVal + "°C", x + 15, y + 75);
 }
 
 // Example Widget Function: Simple Bar Gauge
@@ -121,13 +141,13 @@ function drawGaugeWidget(x, y, label, val, minVal, maxVal)
 
   noStroke();
   fill(180, 200, 220);
-  textSize(14);
+  textSize(24);
   text(label, x + 15, y + 15);
 
   
   fill(255);
-  textSize(28);
-  text(val, x + 15, y + 50);
+  textSize(36);
+  text(val, x + 15, y + 60);
 }
 
 function drawBackgroundSquare(x, y, label, w, h)
@@ -158,3 +178,5 @@ function drawLightWidget(x, y, label, val, w, h, minVal, maxVal)
   textSize(28);
   text(val, x + 15, y + 50);
 }
+
+      
