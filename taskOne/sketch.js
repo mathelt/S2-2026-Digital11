@@ -79,13 +79,12 @@ function draw() {
     //drawBackgroundSquare(850, 300, "Light", 250, 350);
     drawLightWidget(850, 300, "Light", light , 250, 350, 0, 1000)
 
-    if (ph > 0)
+    if (ph > 8)
     {
       fill(255, 0, 0);
       textSize(24);
       textAlign(RIGHT, BOTTOM);
       text("The Ph is too high!", 525, 120);
-      // draw();
       
       //Framecount % (Frames per change) < (number of frames which it is on)
       if (frameCount % 60 < 30) {
@@ -103,7 +102,30 @@ function draw() {
         text("!", 455, 195);
       }
     }
+    if (aquariumData[0].exps.nh3.status == 1){
+      
+      if ((frameCount + 10) % 60 < 30) {
+        // Red fill with white outline
+        fill(150, 0, 0);
+        stroke(255);
+        strokeWeight(2)
+        circle(745, 195, 50);
 
+        // Warning text inside the flashing box
+        fill(255);
+        noStroke();
+        textSize(24);
+        textAlign(CENTER, CENTER);
+        text("!", 745, 195);
+
+        //Create the Ammonia text message
+        fill(255, 0, 0);
+        textSize(24);
+        textAlign(RIGHT, BOTTOM);
+        text("To Much AMMONIA", 800, 120);
+      }
+    }
+    
   } else {
     // Loading State
     fill(255, 100, 100);
@@ -140,7 +162,7 @@ function drawGaugeWidget(x, y, label, val, minVal, maxVal)
   rect(x, y, 200, 150, 10);
 
   noStroke();
-  fill(180, 200, 220);
+  fill(360, 200, 220);
   textSize(24);
   text(label, x + 15, y + 15);
 
