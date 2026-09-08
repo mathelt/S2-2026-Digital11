@@ -3,8 +3,6 @@
 // ===================================================
 
 
-
-
 // Replace this with your teacher's Cloudflare Worker URL:
 const PROXY_URL = "https://seneye-proxy.ezankov.workers.dev/";
 
@@ -14,11 +12,13 @@ const USE_OFFLINE_MOCK = false;
 let aquariumData = null;
 let lastUpdated = "";
 let ph = null;
+let fishPicture;
 
 function preload() {
   // Load initial data before setup() runs
   let endpoint = USE_OFFLINE_MOCK ? "sample-data.json" : PROXY_URL;
   aquariumData = loadJSON(endpoint, onDataLoaded, onError);
+  fishPicture = loadImage("Images/SilverPerch.jpg");
 }
 
 function setup() {
@@ -45,14 +45,25 @@ function onError(err) {
 function draw() {
   background(98, 143, 256, 90); // Dark blue aquarium background
 
+  //Draw colour changing box around the title
+  colorMode(HSB,360, 100, 100);
+  let hue = frameCount % 360;
+  fill(hue, 80, 90);
+  stroke(10);
+  strokeWeight(2)
+  rect(300, 25, 550, 60, 10);
+  colorMode(RGB)
+
+  
   // 1. Draw Title Header
   fill(255);
   textSize(40);
   textAlign(LEFT, TOP);
   text("Fish Environment Dashboard", 315, 30);
 
+
   // Display connection status
-  textSize(12);
+  textSize(14);
   fill(0, 0, 0);
   text("Last updated: " + (lastUpdated || "Loading..."), 500, 70);
 
@@ -67,18 +78,20 @@ function draw() {
     let light = aquariumData[0].exps.lux.curr || 0;
 
      
-
+   
+    
     // Call your custom graphic widgets
     drawTempWidget(50, 120, temp);
-    drawGaugeWidget(325, 120, "pH Level", ph, 6.0, 8.5);
-    drawGaugeWidget(600, 120, "Ammonia (NH3)", nh3, 0.0, 0.05);
-    drawGaugeWidget(875, 120, "Oxygen Level", o2, 0.0, 100.0);
+    drawGaugeWidget(325, 120, "pH Level", ph, 6.0, 8.5, "ph");
+    drawGaugeWidget(600, 120, "Ammonia (NH3)", nh3, 0.0, 0.05, "nh3");
+    drawGaugeWidget(875, 120, "Oxygen Level", o2, 0.0, 100.0, "o2");
     
     //Testing drawing a background for the data logs
-    drawBackgroundSquare(50, 300, "Data Logs", 750, 350);
+    drawBackgroundSquare(50, 300, "Fish", 750, 350);
     //drawBackgroundSquare(850, 300, "Light", 250, 350);
-    drawLightWidget(850, 300, "Light", light , 250, 350, 0, 1000)
+    drawGaugeWidget(850, 400, "Light", light , 0, 1000, "lux")
 
+    
     if (ph > 8)
     {
       fill(255, 0, 0);
@@ -125,7 +138,56 @@ function draw() {
         text("To Much AMMONIA", 800, 120);
       }
     }
+
+     if (aquariumData[0].exps.o2.status == 1){
+      
+      if ((frameCount + 10) % 60 < 30) {
+        // Red fill with white outline
+        fill(150, 0, 0);
+        stroke(255);
+        strokeWeight(2)
+        circle(995, 195, 50);
+
+        // Warning text inside the flashing box
+        fill(255);
+        noStroke();
+        textSize(24);
+        textAlign(CENTER, CENTER);
+        text("!", 995, 195);
+
+        //Create the Oxygen text message
+        fill(255, 0, 0);
+        textSize(24);
+        textAlign(RIGHT, BOTTOM);
+        text("To Much Oxygen", 1060, 120);
+      }
+    }
+
+     if (aquariumData[0].exps.lux.status != null){
+      
+      if ((frameCount + 10) % 60 < 30) {
+        // Red fill with white outline
+        fill(150, 0, 0);
+        stroke(255);
+        strokeWeight(2)
+        circle(925, 360, 50);
+
+        // Warning text inside the flashing box
+        fill(255);
+        noStroke();
+        textSize(24);
+        textAlign(CENTER, CENTER);
+        text("!", 925, 360);
+
+        //Create the Ammonia text message
+        fill(255, 0, 0);
+        textSize(24);
+        textAlign(RIGHT, BOTTOM);
+        text("To Much Light", 1025, 300);
+      }
+    }
     
+    drawFish(75, 340);
   } else {
     // Loading State
     fill(255, 100, 100);
@@ -155,21 +217,38 @@ function drawTempWidget(x, y, tempVal)
 }
 
 // Example Widget Function: Simple Bar Gauge
-function drawGaugeWidget(x, y, label, val, minVal, maxVal) 
+function drawGaugeWidget(x, y, label, val, minVal, maxVal, average) 
 {
+  
+  if (average != "lux"){
   fill(35, 48, 68);
   stroke(60, 80, 110);
-  rect(x, y, 200, 150, 10);
+  rect(x, y, 200, 150, 10)
+  }
+  else{
+    fill(35, 48, 68);
+    stroke(60, 80, 110);
+    rect(x, y, 250, 150, 10);
+  }
+
+  // fill(35, 48, 68);
+  // stroke(60, 80, 110);
+  // rect(x, y, 200, 150, 10);
 
   noStroke();
   fill(360, 200, 220);
   textSize(24);
-  text(label, x + 15, y + 15);
+  text(label, x + 15, y + 5);
+
+  noStroke();
+  fill(225, 165, 0);
+  textSize(24);
+  text("Average: " + aquariumData[0]['exps'][average]['avg'], x + 15, y + 115);
 
   
   fill(255);
-  textSize(36);
-  text(val, x + 15, y + 60);
+  textSize(24);
+  text(val, x + 15, y + 65);
 }
 
 function drawBackgroundSquare(x, y, label, w, h)
@@ -201,4 +280,10 @@ function drawLightWidget(x, y, label, val, w, h, minVal, maxVal)
   text(val, x + 15, y + 50);
 }
 
-      
+
+function drawFish(x, y)
+{
+  push();
+  image(fishPicture, x, y, 700, 300)
+  pop();
+}
