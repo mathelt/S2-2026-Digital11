@@ -280,7 +280,6 @@ function drawLightWidget(x, y, label, val, w, h, minVal, maxVal)
   text(val, x + 15, y + 50);
 }
 
-
 function drawFish(x, y)
 {
   push();
