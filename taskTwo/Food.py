@@ -91,7 +91,10 @@ def main():
               print("")
       elif choice == "4":
           carbohydrates = getProductInfo(barcode, 3033710065967)
-          print(f"Carbohydrate Content: {carbohydrates} g/100g")
+          if carbohydrates >= 100:
+                print(f"Carbohydrate Content: {carbohydrates} g/100g, consume in moderation.")
+          else:
+                print(f"Carbohydrate Content: {carbohydrates} g/100g, healthy choice!")
       elif choice == "5":
           break
       else:
