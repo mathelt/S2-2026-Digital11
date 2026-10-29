@@ -71,7 +71,7 @@ def main():
       print_menu()
       choice = input("Enter your choice: ")
       if choice == "1":
-          product_name, ingredients, nutriscore, sugar = getProductInfo(barcode, 3033710065967)
+          product_name, ingredients, nutriscore, sugar, carbohydrates = getProductInfo(barcode, 3033710065967)
           print(f"Product Name: {product_name}")
           print(f"Ingredients: {ingredients}")
           print(get_recommendation(nutriscore, sugar))
@@ -80,7 +80,7 @@ def main():
       
       elif choice == "3":
           for product, code in special_products.items():
-              product_name, ingredients, nutriscore, sugar = getProductInfo(None, code)
+              product_name, ingredients, nutriscore, sugar, carbohydrates = getProductInfo(None, code)
               print("")
               print(f"  Product: {product}")
               print(f"  Product Name: {product_name}")
@@ -90,8 +90,8 @@ def main():
               print(f"  Recommendation: {get_recommendation(nutriscore, sugar)}")
               print("")
       elif choice == "4":
-          carbohydrates = getProductInfo(barcode, 3033710065967)
-          if carbohydrates >= 100:
+          product_name, ingredients, nutriscore, sugar, carbohydrates = getProductInfo(barcode, 3033710065967)
+          if carbohydrates >= 40:
                 print(f"Carbohydrate Content: {carbohydrates} g/100g, consume in moderation.")
           else:
                 print(f"Carbohydrate Content: {carbohydrates} g/100g, healthy choice!")
